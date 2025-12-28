@@ -18,18 +18,50 @@ class_name SubathonStyleMeter
 @export var viewersLabel : Label
 @export var chatManager : ChatManager
 
+@export_group("Chat Settings")
+@export var chatTimer : Timer
+@export var rank0ChatInterval : float = 5.0  # Slowest chat rate
+@export var rank1ChatInterval : float = 4.0
+@export var rank2ChatInterval : float = 3.0
+@export var rank3ChatInterval : float = 2.0
+@export var rank4ChatInterval : float = 1.0  # Fastest chat rate
+
 var currentScore : float = 0.0
 var currentRankIndex : int = 0
 var progressBarMaterial : ShaderMaterial
 var progressTween : Tween
 var rankUpTween : Tween
+var messageBank : MessageBank
+
+# Chat system variables
+var chatUsers : Array[String] = [
+	"xXDarkSlayer99Xx",
+	"PogChampion",
+	"NoobMaster69",
+	"TwitchTV_Bot",
+	"SneakyNinja",
+	"EpicGamer420",
+	"MemeLord",
+	"ProPlayer_TTV",
+	"CoffeeAddict",
+	"NightOwl88"
+]
 
 func _ready() -> void:
 	SignalBus.successfullParry.connect(onSuccessfullParry)
 	
+	# Instantiate message bank
+	messageBank = MessageBank.new()
+	
 	# Store reference to the shader material
 	if hypeTrainProgressBar and hypeTrainProgressBar.material:
 		progressBarMaterial = hypeTrainProgressBar.material as ShaderMaterial
+	
+	# Configure chat timer
+	if chatTimer:
+		chatTimer.wait_time = rank0ChatInterval
+		chatTimer.timeout.connect(sendRandomChatMessage)
+		chatTimer.start()
 	
 	# Apply initial rank effects
 	applyRank0Effects()
@@ -150,9 +182,6 @@ func playRankUpAnimation() -> void:
 	rankUpTween.tween_property(hypeTrainControl, "modulate", originalModulate, 0.3)
 	rankUpTween.tween_property(hypeTrainControl, "scale", originalScale, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	
-	#Play sound
-	rankUpSoundEffect.play()
-	
 	# Set the new gradient immediately (not tweened, as gradient resources can't be interpolated)
 	var newGradient : GradientTexture1D = getGradientForRank(currentRankIndex)
 	if newGradient:
@@ -177,9 +206,35 @@ func resetEffectsToDefault() -> void:
 	# Reset any visual effects, sounds, etc. to default state
 	pass
 
+## Updates the chat timer interval based on current rank
+func updateChatInterval() -> void:
+	if not chatTimer:
+		return
+	
+	var newInterval : float
+	
+	match currentRankIndex:
+		0:
+			newInterval = rank0ChatInterval
+		1:
+			newInterval = rank1ChatInterval
+		2:
+			newInterval = rank2ChatInterval
+		3:
+			newInterval = rank3ChatInterval
+		4:
+			newInterval = rank4ChatInterval
+		_:
+			newInterval = rank0ChatInterval
+	
+	chatTimer.wait_time = newInterval
+	# Restart timer with new interval
+	chatTimer.start()
+
 ## Rank 0 effects (first/lowest rank)
 func applyRank0Effects() -> void:
 	resetEffectsToDefault()
+	updateChatInterval()
 	# Change gradient to rank 0 gradient
 	if progressBarMaterial and rank0Gradient:
 		progressBarMaterial.set_shader_parameter("gradient_texture", rank0Gradient)
@@ -187,6 +242,7 @@ func applyRank0Effects() -> void:
 ## Rank 1 effects (second rank)
 func applyRank1Effects() -> void:
 	resetEffectsToDefault()
+	updateChatInterval()
 	# Change gradient to rank 1 gradient
 	if progressBarMaterial and rank1Gradient:
 		progressBarMaterial.set_shader_parameter("gradient_texture", rank1Gradient)
@@ -194,6 +250,7 @@ func applyRank1Effects() -> void:
 ## Rank 2 effects (third rank)
 func applyRank2Effects() -> void:
 	resetEffectsToDefault()
+	updateChatInterval()
 	# Change gradient to rank 2 gradient
 	if progressBarMaterial and rank2Gradient:
 		progressBarMaterial.set_shader_parameter("gradient_texture", rank2Gradient)
@@ -201,12 +258,51 @@ func applyRank2Effects() -> void:
 ## Rank 3 effects (fourth rank)
 func applyRank3Effects() -> void:
 	resetEffectsToDefault()
+	updateChatInterval()
 	# Add any additional effects for rank 3 here
 	pass
 
 ## Rank 4 effects (fifth/max rank)
 func applyRank4Effects() -> void:
 	resetEffectsToDefault()
+	updateChatInterval()
 	# Change gradient to rank 4 gradient (max rank)
 	if progressBarMaterial and rank4Gradient:
 		progressBarMaterial.set_shader_parameter("gradient_texture", rank4Gradient)
+
+## Sends a random chat message based on current rank tier
+func sendRandomChatMessage() -> void:
+	if not chatManager:
+		return
+	
+	# Get available messages based on current rank (unlocks cumulative messages)
+	var availableMessages : Array[String] = getMessagesForCurrentRank()
+	
+	if availableMessages.is_empty():
+		return
+	
+	# Pick random user and message
+	var randomUser : String = chatUsers[randi() % chatUsers.size()]
+	var randomMessage : String = availableMessages[randi() % availableMessages.size()]
+	
+	# Send the message
+	chatManager.addMessage(randomUser, randomMessage)
+
+## Returns messages for the current rank tier only (not cumulative)
+func getMessagesForCurrentRank() -> Array[String]:
+	if not messageBank:
+		return []
+	
+	match currentRankIndex:
+		0:
+			return messageBank.rank0Messages
+		1:
+			return messageBank.rank1Messages
+		2:
+			return messageBank.rank2Messages
+		3:
+			return messageBank.rank3Messages
+		4:
+			return messageBank.rank4Messages
+		_:
+			return []

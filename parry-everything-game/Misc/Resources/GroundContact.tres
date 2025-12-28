@@ -8,6 +8,6 @@ perfectParryWindow = 0.1
 normalParryWindow = 0.2
 name = "Ground Parry"
 normalParryPoints = 50.0
-perfectParryPoints = 500.0
+perfectParryPoints = 250.0
 chatMessageResponses = Array[String](["Did he parry the ground?", "He's got to be cheating", "OMEGALUL"])
 metadata/_custom_type_script = "uid://b6xdr0uvh70xn"

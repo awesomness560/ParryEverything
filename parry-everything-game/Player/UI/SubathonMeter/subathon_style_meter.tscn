@@ -65,7 +65,7 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_emlpu"]
 bg_color = Color(1, 1, 1, 1)
 
-[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("rankUpSoundEffect", "hypeTrainText", "hypeTrainProgressBar", "hypeTrainControl", "eyeIcon", "viewersLabel", "chatManager")]
+[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("rankUpSoundEffect", "hypeTrainText", "hypeTrainProgressBar", "hypeTrainControl", "eyeIcon", "viewersLabel", "chatManager", "chatTimer")]
 offset_right = 312.0
 offset_bottom = 383.0
 script = ExtResource("1_f2gss")
@@ -81,6 +81,12 @@ hypeTrainControl = NodePath("VBoxContainer/HypeTrainControl/HypeTrainProgressBG"
 eyeIcon = NodePath("VBoxContainer/LiveCountContainer/EyeIcon")
 viewersLabel = NodePath("VBoxContainer/LiveCountContainer/ViewersLabel")
 chatManager = NodePath("VBoxContainer/ChatMarginContainer/ChatManager")
+chatTimer = NodePath("ChatTimer")
+rank0ChatInterval = 2.0
+rank1ChatInterval = 1.5
+rank2ChatInterval = 0.5
+rank3ChatInterval = 0.3
+rank4ChatInterval = 0.2
 
 [node name="Control" type="Control" parent="." unique_id=1375974037]
 visible = false
@@ -200,3 +206,5 @@ show_percentage = false
 
 [node name="RankUpSoundEffect" type="AudioStreamPlayer" parent="." unique_id=1845384286]
 stream = ExtResource("11_7m5oa")
+
+[node name="ChatTimer" type="Timer" parent="." unique_id=1002520241]

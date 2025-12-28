@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_emp1g")
-rankName = "TRENDING #1 WORLDWIDE"
+rankName = "TRENDING #1"
 multiplier = 3.0
 pointsRequired = 800.0
 metadata/_custom_type_script = "uid://mgorkvvuaqwb"
