@@ -69,7 +69,7 @@ armsAnimationPlayer = NodePath("first_person_animations_v2/AnimationPlayer")
 
 [node name="first_person_animations_v2" parent="CameraRoot/Arms" unique_id=1054650181 instance=ExtResource("3_gwnis")]
 
-[node name="Skeleton3D" parent="CameraRoot/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 1510158539) index="0" unique_id=1312063648]
+[node name="Skeleton3D" parent="CameraRoot/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 862156670) index="0" unique_id=1008763252]
 bones/1/rotation = Quaternion(-0.48333433, -0.38415936, -0.7320739, 0.2878843)
 bones/2/rotation = Quaternion(-1.7539136e-08, 1.1953957e-08, -0.7568831, 0.6535503)
 bones/3/rotation = Quaternion(0.050190784, 0.17272587, -0.14460105, 0.9730042)
@@ -122,7 +122,7 @@ bones/49/rotation = Quaternion(-0.71055305, -6.675002e-09, -1.8022138e-09, 0.703
 bones/52/position = Vector3(-0.24597198, -0.13598143, 0.3614115)
 bones/52/rotation = Quaternion(-0.12196328, -0.57560873, -0.696509, 0.4107003)
 
-[node name="AnimationPlayer" parent="CameraRoot/Arms/first_person_animations_v2" index="1" unique_id=461424768]
+[node name="AnimationPlayer" parent="CameraRoot/Arms/first_person_animations_v2" index="1" unique_id=23678671]
 process_mode = 3
 next/FP_Idle_Pose = &"FP_Idle_Pose"
 blend_times = [&"FP_Idle_Pose", &"FP_Idle_Pose", 0.2, &"FP_Idle_Pose", &"FP_Parry_Stance", 0.2, &"FP_Idle_Pose", &"FP_Parry_Success", 0.2, &"FP_Idle_Pose", &"FP_Stretching_Hands", 0.2]

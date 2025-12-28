@@ -74,7 +74,7 @@ func _onNormalParry(parryResource : ParryResource):
 	# Call the success callback if it exists (passing false for not perfect)
 	if parryResource.successfulParryCallback.is_valid():
 		parryResource.successfulParryCallback.call(false)
-	SignalBus.sucessfullParry.emit(parryResource, false)
+	SignalBus.successfullParry.emit(parryResource, false)
 	
 	await get_tree().create_timer(1).timeout
 	fpAnimationManager.playAnimation("FP_Idle_Pose")
@@ -94,7 +94,7 @@ func _onPerfectParry(parryResource : ParryResource):
 	# Call the success callback if it exists (passing true for perfect parry)
 	if parryResource.successfulParryCallback.is_valid():
 		parryResource.successfulParryCallback.call(true)
-	SignalBus.sucessfullParry.emit(parryResource, true)
+	SignalBus.successfullParry.emit(parryResource, true)
 	
 	get_tree().paused = true
 	parryFlash.show()

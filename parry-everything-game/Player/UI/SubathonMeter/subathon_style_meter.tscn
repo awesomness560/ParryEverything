@@ -2,6 +2,13 @@
 
 [ext_resource type="Script" uid="uid://cwywvbioyo420" path="res://Player/UI/SubathonMeter/subathon_style_meter.gd" id="1_f2gss"]
 [ext_resource type="Texture2D" uid="uid://csg1qd32tfxg7" path="res://Assets/eyeIcon.png" id="1_gpo34"]
+[ext_resource type="Script" uid="uid://mgorkvvuaqwb" path="res://Misc/Resources/Ranks/ranks.gd" id="2_6t524"]
+[ext_resource type="Script" uid="uid://d3jdtr0qdmuj8" path="res://Player/UI/SubathonMeter/chat_manager.gd" id="3_emlpu"]
+[ext_resource type="Resource" uid="uid://cfveranwdh3l5" path="res://Misc/Resources/Ranks/AffiliateStatus.tres" id="3_tdqva"]
+[ext_resource type="Resource" uid="uid://ci2rkud4unc0l" path="res://Misc/Resources/Ranks/PartnerStatus.tres" id="4_7m5oa"]
+[ext_resource type="Resource" uid="uid://bgy2tqop0jy20" path="res://Misc/Resources/Ranks/FRONT_PAGE.tres" id="5_2epkk"]
+[ext_resource type="Resource" uid="uid://coghna6fx56bn" path="res://Misc/Resources/Ranks/TRENDING.tres" id="6_hhsb3"]
+[ext_resource type="Resource" uid="uid://i3t6m0x5oult" path="res://Misc/Resources/Ranks/God.tres" id="7_08wj8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wp7on"]
 bg_color = Color(0, 0, 0, 1)
@@ -15,14 +22,34 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_emlpu"]
 bg_color = Color(1, 1, 1, 1)
 
-[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("hypeTrainText", "hypeTrainProgressBar", "eyeIcon", "viewersLabel")]
+[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("hypeTrainText", "hypeTrainProgressBar", "eyeIcon", "viewersLabel", "chatManager")]
 offset_right = 312.0
 offset_bottom = 383.0
 script = ExtResource("1_f2gss")
+ranks = Array[ExtResource("2_6t524")]([ExtResource("3_tdqva"), ExtResource("4_7m5oa"), ExtResource("5_2epkk"), ExtResource("6_hhsb3"), ExtResource("7_08wj8")])
 hypeTrainText = NodePath("VBoxContainer/HypeTrain/HypeTrainTextLabel")
 hypeTrainProgressBar = NodePath("VBoxContainer/HypeTrain")
 eyeIcon = NodePath("VBoxContainer/LiveCountContainer/EyeIcon")
 viewersLabel = NodePath("VBoxContainer/LiveCountContainer/ViewersLabel")
+chatManager = NodePath("VBoxContainer/ChatMarginContainer/ChatManager")
+
+[node name="Control" type="Control" parent="." unique_id=1375974037]
+visible = false
+layout_mode = 2
+
+[node name="ChatMessage" type="HBoxContainer" parent="Control" unique_id=690063109]
+layout_mode = 0
+offset_right = 153.0
+offset_bottom = 23.0
+
+[node name="Username" type="Label" parent="Control/ChatMessage" unique_id=1395905396]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+text = "User_1:"
+
+[node name="Message" type="Label" parent="Control/ChatMessage" unique_id=2117618213]
+layout_mode = 2
+text = "POGCHAMP"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2061455975]
 layout_mode = 2
@@ -75,22 +102,15 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="Control" type="Control" parent="VBoxContainer/ChatMarginContainer" unique_id=1375974037]
+[node name="ChatManager" type="ScrollContainer" parent="VBoxContainer/ChatMarginContainer" unique_id=631432703 node_paths=PackedStringArray("vbox")]
 layout_mode = 2
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
+script = ExtResource("3_emlpu")
+vbox = NodePath("VBoxContainer")
 
-[node name="ChatMessage" type="HBoxContainer" parent="VBoxContainer/ChatMarginContainer/Control" unique_id=690063109]
-layout_mode = 0
-offset_right = 153.0
-offset_bottom = 23.0
-
-[node name="Username" type="Label" parent="VBoxContainer/ChatMarginContainer/Control/ChatMessage" unique_id=1395905396]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ChatMarginContainer/ChatManager" unique_id=953437002]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 1, 1, 1)
-text = "User_1:"
-
-[node name="Message" type="Label" parent="VBoxContainer/ChatMarginContainer/Control/ChatMessage" unique_id=2117618213]
-layout_mode = 2
-text = "POGCHAMP"
 
 [node name="TimeLeftProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1753095261]
 custom_minimum_size = Vector2(0, 14)

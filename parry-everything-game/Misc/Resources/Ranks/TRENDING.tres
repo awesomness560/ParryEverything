@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Rank" format=3 uid="uid://coghna6fx56bn"]
+
+[ext_resource type="Script" uid="uid://mgorkvvuaqwb" path="res://Misc/Resources/Ranks/ranks.gd" id="1_emp1g"]
+
+[resource]
+script = ExtResource("1_emp1g")
+rankName = "TRENDING #1 WORLDWIDE"
+multiplier = 3.0
+pointsRequired = 800.0
+metadata/_custom_type_script = "uid://mgorkvvuaqwb"

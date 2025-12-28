@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Rank" format=3 uid="uid://bgy2tqop0jy20"]
+
+[ext_resource type="Script" uid="uid://mgorkvvuaqwb" path="res://Misc/Resources/Ranks/ranks.gd" id="1_jwxwc"]
+
+[resource]
+script = ExtResource("1_jwxwc")
+rankName = "FRONT PAGE"
+multiplier = 2.0
+pointsRequired = 400.0
+metadata/_custom_type_script = "uid://mgorkvvuaqwb"

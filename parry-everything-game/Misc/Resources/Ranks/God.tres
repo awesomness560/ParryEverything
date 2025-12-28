@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Rank" format=3 uid="uid://i3t6m0x5oult"]
+
+[ext_resource type="Script" uid="uid://mgorkvvuaqwb" path="res://Misc/Resources/Ranks/ranks.gd" id="1_criye"]
+
+[resource]
+script = ExtResource("1_criye")
+rankName = "GOD OF CONTENT"
+multiplier = 5.0
+pointsRequired = 1500.0
+metadata/_custom_type_script = "uid://mgorkvvuaqwb"

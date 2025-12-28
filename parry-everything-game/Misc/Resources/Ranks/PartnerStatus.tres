@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Rank" format=3 uid="uid://ci2rkud4unc0l"]
+
+[ext_resource type="Script" uid="uid://mgorkvvuaqwb" path="res://Misc/Resources/Ranks/ranks.gd" id="1_y777x"]
+
+[resource]
+script = ExtResource("1_y777x")
+rankName = "Partner Status"
+multiplier = 1.5
+pointsRequired = 150.0
+metadata/_custom_type_script = "uid://mgorkvvuaqwb"

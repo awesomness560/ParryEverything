@@ -34,13 +34,6 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 func _ready() -> void:
 	groundParryResource.successfulParryCallback = apply_ground_parry_boost
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("fling_me"):
-		var vel = Vector3(current_velocity.x, 2, current_velocity.z)
-		if vel.length() > 0.1:
-			var move_dir = vel.normalized()
-			add_impulse(move_dir * 50, 5.0)
-
 func _physics_process(delta: float) -> void:
 	# Get input
 	var input_dir = get_input_direction()

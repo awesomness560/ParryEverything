@@ -22,3 +22,6 @@ enum ParryType {
 @export var name : String
 @export var normalParryPoints : float
 @export var perfectParryPoints : float
+@export_group("Chat Settings")
+##Different chat messages that can show up on successful parry
+@export var chatMessageResponses : Array[String]
