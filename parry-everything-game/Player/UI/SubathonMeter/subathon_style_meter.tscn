@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://bc51ka7ss12sx"]
+
+[ext_resource type="Script" uid="uid://cwywvbioyo420" path="res://Player/UI/SubathonMeter/subathon_style_meter.gd" id="1_f2gss"]
+[ext_resource type="Texture2D" uid="uid://csg1qd32tfxg7" path="res://Assets/eyeIcon.png" id="1_gpo34"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wp7on"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gpo34"]
+bg_color = Color(0.4537701, 0.2713349, 0.8162605, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f2gss"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_emlpu"]
+bg_color = Color(1, 1, 1, 1)
+
+[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("hypeTrainText", "hypeTrainProgressBar", "eyeIcon", "viewersLabel")]
+offset_right = 312.0
+offset_bottom = 383.0
+script = ExtResource("1_f2gss")
+hypeTrainText = NodePath("VBoxContainer/HypeTrain/HypeTrainTextLabel")
+hypeTrainProgressBar = NodePath("VBoxContainer/HypeTrain")
+eyeIcon = NodePath("VBoxContainer/LiveCountContainer/EyeIcon")
+viewersLabel = NodePath("VBoxContainer/LiveCountContainer/ViewersLabel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2061455975]
+layout_mode = 2
+
+[node name="HypeTrain" type="ProgressBar" parent="VBoxContainer" unique_id=1240760111]
+custom_minimum_size = Vector2(0, 54.995)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_wp7on")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gpo34")
+value = 46.8
+show_percentage = false
+
+[node name="HypeTrainTextLabel" type="RichTextLabel" parent="VBoxContainer/HypeTrain" unique_id=396194281]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+text = "Affilate Status"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LiveCountContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=543544797]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="EyeIcon" type="TextureRect" parent="VBoxContainer/LiveCountContainer" unique_id=224350562]
+modulate = Color(1, 0.13333334, 0, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("1_gpo34")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="ViewersLabel" type="Label" parent="VBoxContainer/LiveCountContainer" unique_id=581131815]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.13333334, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "14,000"
+
+[node name="ChatMarginContainer" type="MarginContainer" parent="VBoxContainer" unique_id=511228385]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Control" type="Control" parent="VBoxContainer/ChatMarginContainer" unique_id=1375974037]
+layout_mode = 2
+
+[node name="ChatMessage" type="HBoxContainer" parent="VBoxContainer/ChatMarginContainer/Control" unique_id=690063109]
+layout_mode = 0
+offset_right = 153.0
+offset_bottom = 23.0
+
+[node name="Username" type="Label" parent="VBoxContainer/ChatMarginContainer/Control/ChatMessage" unique_id=1395905396]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+text = "User_1:"
+
+[node name="Message" type="Label" parent="VBoxContainer/ChatMarginContainer/Control/ChatMessage" unique_id=2117618213]
+layout_mode = 2
+text = "POGCHAMP"
+
+[node name="TimeLeftProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1753095261]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_f2gss")
+theme_override_styles/fill = SubResource("StyleBoxFlat_emlpu")
+value = 67.67
+show_percentage = false
