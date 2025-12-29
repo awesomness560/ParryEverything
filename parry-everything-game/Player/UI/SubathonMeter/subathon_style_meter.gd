@@ -102,6 +102,10 @@ func _ready() -> void:
 		timeLeftProgressBar.value = timeLeft
 		updateTimeLeftStage()  # Set initial color
 	
+	# Initialize viewer count to 10
+	if viewersLabel:
+		viewersLabel.text = "10"
+	
 	# Apply initial rank effects
 	applyRank0Effects()
 	
@@ -123,6 +127,18 @@ func _process(delta: float) -> void:
 		# Check if we hit zero
 		if timeLeft == 0.0:
 			onTimeLeftReachedZero()
+	
+	# Decay score (which causes viewers to drip down)
+	if currentScore > 0:
+		var scoreDecayRate : float = getDecayRateForRank() * 0.5  # Score decays at half the rate of time left
+		currentScore = max(0.0, currentScore - (scoreDecayRate * delta))
+		
+		# Manually update viewer count as score decays (no tween, just direct update)
+		if viewersLabel:
+			var targetViewers : int = int(currentScore * viewerScoreMultiplier)
+			# Never drop below 10 viewers
+			targetViewers = max(10, targetViewers)
+			viewersLabel.text = str(targetViewers)
 	
 	# Apply shake effect based on current stage
 	applyShakeEffect()
@@ -378,14 +394,10 @@ func getMessagesForCurrentRank() -> Array[String]:
 		_:
 			return []
 
-## Updates the viewer count label with a smooth lerp animation
+## Updates the viewer count label with a smooth lerp animation (only for increases)
 func updateViewerCount() -> void:
 	if not viewersLabel:
 		return
-	
-	# Kill existing viewer tween if it exists
-	if viewerTween:
-		viewerTween.kill()
 	
 	# Calculate target viewer count
 	var targetViewers : int = int(currentScore * viewerScoreMultiplier)
@@ -395,11 +407,18 @@ func updateViewerCount() -> void:
 	if viewersLabel.text.is_valid_int():
 		currentViewers = viewersLabel.text.to_int()
 	
-	# Only flash if viewers are increasing
-	if targetViewers > currentViewers:
-		playViewerFlash()
+	# Only proceed if viewers are increasing
+	if targetViewers <= currentViewers:
+		return
 	
-	# Create tween to lerp viewer count
+	# Flash when viewers increase
+	playViewerFlash()
+	
+	# Kill existing viewer tween if it exists
+	if viewerTween:
+		viewerTween.kill()
+	
+	# Create tween to lerp viewer count up
 	viewerTween = create_tween()
 	viewerTween.tween_method(
 		func(value: float): viewersLabel.text = str(int(value)),
@@ -536,15 +555,16 @@ func onTimeLeftReachedZero() -> void:
 	# Reset score to the first rank's requirement (0)
 	currentScore = ranks[0].pointsRequired
 	
+	#Clear chat
+	chatManager.clearAllMessages()
+	
 	# Apply rank 0 effects (resets all effects)
 	applyRank0Effects()
 	
 	# Update displays
 	updateDisplay()
 	
-	chatManager.clearAllMessages()
-	
-	# Lerp viewers to zero
+	# Lerp viewers to 10 (minimum)
 	if viewersLabel:
 		# Kill existing viewer tween if it exists
 		if viewerTween:
@@ -558,7 +578,7 @@ func onTimeLeftReachedZero() -> void:
 		viewerTween.tween_method(
 			func(value: float): viewersLabel.text = str(int(value)),
 			float(currentViewers),
-			0.0,
+			10.0,  # Minimum viewer count
 			1.0  # Duration in seconds
 		).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 
