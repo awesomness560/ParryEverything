@@ -46,7 +46,7 @@ volume_db = -20.604
 autoplay = true
 
 [node name="Player" parent="." unique_id=559422446 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2997768, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2997768, -0.0040740967)
 
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=979706308]
 transform = Transform3D(32.419567, 0, 0, 0, 0.5117212, 0, 0, 0, 32.419567, 0, -0.22969645, -0.811957)
@@ -59,7 +59,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_lquwl")
 shape = SubResource("BoxShape3D_7mycd")
 
 [node name="Cube" type="MeshInstance3D" parent="." unique_id=2146122419]
-transform = Transform3D(2.3237407, 0, 0, 0, 2.3237407, 0, 0, 0, 2.3237407, 0, 1.1772532, 4.1614876)
+transform = Transform3D(2.3237407, 0, 0, 0, 2.3237407, 0, 0, 0, 2.3237407, 0, 1.1772532, 4.1574135)
 mesh = SubResource("BoxMesh_272bh")
 surface_material_override/0 = SubResource("StandardMaterial3D_5vw27")
 

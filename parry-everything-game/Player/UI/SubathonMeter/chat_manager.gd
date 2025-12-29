@@ -51,3 +51,9 @@ func addMessage(username: String, message: String, color: Color = Color.WHITE):
 	# Auto-scroll to bottom
 	await get_tree().process_frame
 	scroll_vertical = int(vbox.size.y)
+
+func clearAllMessages():
+	while vbox.get_child_count() > 0:
+		var old_msg = vbox.get_child(0)
+		vbox.remove_child(old_msg)
+		old_msg.free()

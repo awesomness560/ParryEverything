@@ -12,6 +12,18 @@
 [ext_resource type="Shader" uid="uid://bp27w7uyag8ie" path="res://Assets/Shaders/gradient_scroll.gdshader" id="8_tdqva"]
 [ext_resource type="AudioStream" uid="uid://uur3vjr0cjvs" path="res://Assets/Sounds/trainWhistle.mp3" id="11_7m5oa"]
 
+[sub_resource type="Gradient" id="Gradient_wbuck"]
+offsets = PackedFloat32Array(0, 0.38059703, 0.92164177)
+colors = PackedColorArray(1, 1, 1, 0, 0, 0, 0, 0.25800002, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_uvo23"]
+gradient = SubResource("Gradient_wbuck")
+fill_from = Vector2(0.48989898, 0)
+fill_to = Vector2(0.49747476, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ia7j0"]
+texture = SubResource("GradientTexture2D_uvo23")
+
 [sub_resource type="Gradient" id="Gradient_tdqva"]
 offsets = PackedFloat32Array(0.37313432)
 colors = PackedColorArray(0.45799357, 0.27564672, 0.8221246, 1)
@@ -33,6 +45,13 @@ colors = PackedColorArray(1, 0.8117647, 0.2509804, 1, 1, 0.8627451, 0.4509804, 1
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_2mmhm"]
 gradient = SubResource("Gradient_08wj8")
 
+[sub_resource type="Gradient" id="Gradient_hhsb3"]
+offsets = PackedFloat32Array(0, 0.5074627, 1)
+colors = PackedColorArray(1, 0.3019608, 0.42745098, 1, 1, 0.45882353, 0.56078434, 1, 1, 0.3019608, 0.42745098, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_wbuck"]
+gradient = SubResource("Gradient_hhsb3")
+
 [sub_resource type="Gradient" id="Gradient_7m5oa"]
 offsets = PackedFloat32Array(0, 0.5261194, 1)
 colors = PackedColorArray(0.48235294, 0.17254902, 0.7490196, 1, 0.78039217, 0.49019608, 1, 1, 0.48235294, 0.17254902, 0.7490196, 1)
@@ -47,8 +66,8 @@ bg_color = Color(0, 0, 0, 1)
 bg_color = Color(0.4537701, 0.2713349, 0.8162605, 1)
 
 [sub_resource type="Gradient" id="Gradient_2mmhm"]
-offsets = PackedFloat32Array(0, 0.5261194, 1)
-colors = PackedColorArray(0.48235294, 0.17254902, 0.7490196, 1, 0.78039217, 0.49019608, 1, 1, 0.48235294, 0.17254902, 0.7490196, 1)
+offsets = PackedFloat32Array(0, 0.5074627, 1)
+colors = PackedColorArray(1, 0.3019608, 0.42745098, 1, 1, 0.45882353, 0.56078434, 1, 1, 0.3019608, 0.42745098, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_2epkk"]
 gradient = SubResource("Gradient_2mmhm")
@@ -57,7 +76,10 @@ gradient = SubResource("Gradient_2mmhm")
 shader = ExtResource("8_tdqva")
 shader_parameter/gradient_texture = SubResource("GradientTexture1D_2epkk")
 shader_parameter/scroll_speed = 0.5
-shader_parameter/progress = 0.4450000211375
+shader_parameter/progress = 0.4230000200925
+shader_parameter/pulse_mode = false
+shader_parameter/pulse_speed = 2.3570001119575
+shader_parameter/pulse_aspect = 0.33000001241512
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f2gss"]
 bg_color = Color(0, 0, 0, 1)
@@ -65,21 +87,24 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_emlpu"]
 bg_color = Color(1, 1, 1, 1)
 
-[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("rankUpSoundEffect", "hypeTrainText", "hypeTrainProgressBar", "hypeTrainControl", "eyeIcon", "viewersLabel", "chatManager", "chatTimer")]
+[node name="SubathonStyleMeter" type="PanelContainer" unique_id=1089802705 node_paths=PackedStringArray("hypeTrainText", "hypeTrainProgressBar", "hypeTrainControl", "eyeIcon", "viewersLabel", "viewerContainer", "timeLeftProgressBar", "chatManager", "chatTimer")]
 offset_right = 312.0
 offset_bottom = 383.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_ia7j0")
 script = ExtResource("1_f2gss")
 ranks = Array[ExtResource("2_6t524")]([ExtResource("3_tdqva"), ExtResource("4_7m5oa"), ExtResource("5_2epkk"), ExtResource("6_hhsb3"), ExtResource("7_08wj8")])
-rankUpSoundEffect = NodePath("RankUpSoundEffect")
 rank0Gradient = SubResource("GradientTexture1D_7m5oa")
 rank1Gradient = SubResource("GradientTexture1D_hhsb3")
 rank2Gradient = SubResource("GradientTexture1D_2mmhm")
+rank3Gradient = SubResource("GradientTexture1D_wbuck")
 rank4Gradient = SubResource("GradientTexture1D_08wj8")
 hypeTrainText = NodePath("VBoxContainer/HypeTrainControl/HypeTrainProgressBG/HypeTrainProgress/HypeTrainTextLabel")
 hypeTrainProgressBar = NodePath("VBoxContainer/HypeTrainControl/HypeTrainProgressBG/HypeTrainProgress")
 hypeTrainControl = NodePath("VBoxContainer/HypeTrainControl/HypeTrainProgressBG")
-eyeIcon = NodePath("VBoxContainer/LiveCountContainer/EyeIcon")
-viewersLabel = NodePath("VBoxContainer/LiveCountContainer/ViewersLabel")
+eyeIcon = NodePath("VBoxContainer/LiveCount/LiveCountContainer/EyeIcon")
+viewersLabel = NodePath("VBoxContainer/LiveCount/LiveCountContainer/ViewersLabel")
+viewerContainer = NodePath("VBoxContainer/LiveCount/LiveCountContainer")
+timeLeftProgressBar = NodePath("VBoxContainer/TimeLeftProgressBar")
 chatManager = NodePath("VBoxContainer/ChatMarginContainer/ChatManager")
 chatTimer = NodePath("ChatTimer")
 rank0ChatInterval = 2.0
@@ -159,12 +184,22 @@ text = "Affilate Status"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LiveCountContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=543544797]
+[node name="LiveCount" type="Control" parent="VBoxContainer" unique_id=872475808]
+custom_minimum_size = Vector2(0, 40.27)
 layout_mode = 2
+
+[node name="LiveCountContainer" type="HBoxContainer" parent="VBoxContainer/LiveCount" unique_id=543544797]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="EyeIcon" type="TextureRect" parent="VBoxContainer/LiveCountContainer" unique_id=224350562]
+[node name="EyeIcon" type="TextureRect" parent="VBoxContainer/LiveCount/LiveCountContainer" unique_id=224350562]
 modulate = Color(1, 0.13333334, 0, 1)
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -172,7 +207,7 @@ texture = ExtResource("1_gpo34")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="ViewersLabel" type="Label" parent="VBoxContainer/LiveCountContainer" unique_id=581131815]
+[node name="ViewersLabel" type="Label" parent="VBoxContainer/LiveCount/LiveCountContainer" unique_id=581131815]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.13333334, 0, 1)
 theme_override_font_sizes/font_size = 20
@@ -197,7 +232,7 @@ vbox = NodePath("VBoxContainer")
 layout_mode = 2
 
 [node name="TimeLeftProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1753095261]
-custom_minimum_size = Vector2(0, 14)
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_f2gss")
 theme_override_styles/fill = SubResource("StyleBoxFlat_emlpu")

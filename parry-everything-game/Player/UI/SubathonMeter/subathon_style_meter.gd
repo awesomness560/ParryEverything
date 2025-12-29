@@ -2,12 +2,12 @@ extends PanelContainer
 class_name SubathonStyleMeter
 
 @export var ranks : Array[Rank]
-@export var rankUpSoundEffect : AudioStreamPlayer
 
 @export_group("Gradient Textures")
 @export var rank0Gradient : GradientTexture1D
 @export var rank1Gradient : GradientTexture1D
 @export var rank2Gradient : GradientTexture1D
+@export var rank3Gradient : GradientTexture1D
 @export var rank4Gradient : GradientTexture1D
 
 @export_group("UI Elements")
@@ -16,6 +16,8 @@ class_name SubathonStyleMeter
 @export var hypeTrainControl : Control
 @export var eyeIcon : TextureRect
 @export var viewersLabel : Label
+@export var viewerContainer : HBoxContainer
+@export var timeLeftProgressBar : ProgressBar
 @export var chatManager : ChatManager
 
 @export_group("Chat Settings")
@@ -26,12 +28,39 @@ class_name SubathonStyleMeter
 @export var rank3ChatInterval : float = 2.0
 @export var rank4ChatInterval : float = 1.0  # Fastest chat rate
 
+@export_group("Viewer Settings")
+@export var viewerScoreMultiplier : float = 3.0  # Score multiplied by this to get viewer count
+@export var viewerFlashColor : Color = Color(1.0, 1.0, 0.0, 1.0)  # Color to flash when viewers increment
+@export var viewerFlashDuration : float = 0.15  # Duration of the flash effect
+@export var viewerScaleMultiplier : float = 1.1  # Scale multiplier for container flash (e.g., 1.1 = 10% larger)
+
+@export_group("Time Left Settings")
+@export var rank0DecayRate : float = 5.0  # Points lost per second at rank 0
+@export var rank1DecayRate : float = 7.0  # Points lost per second at rank 1
+@export var rank2DecayRate : float = 10.0  # Points lost per second at rank 2
+@export var rank3DecayRate : float = 15.0  # Points lost per second at rank 3
+@export var rank4DecayRate : float = 20.0  # Points lost per second at rank 4
+@export var stage1Color : Color = Color.WHITE  # Color when 2/3 to full
+@export var stage2Color : Color = Color.ORANGE  # Color when 1/3 to 2/3
+@export var stage3Color : Color = Color.RED  # Color when 0 to 1/3
+@export var stage2ShakeIntensity : float = 2.0  # Shake amount for stage 2 (orange)
+@export var stage3ShakeIntensity : float = 8.0  # Shake amount for stage 3 (red)
+
 var currentScore : float = 0.0
 var currentRankIndex : int = 0
 var progressBarMaterial : ShaderMaterial
 var progressTween : Tween
 var rankUpTween : Tween
+var viewerTween : Tween
+var viewerFlashTween : Tween
+var eyeFlashTween : Tween
+var viewerContainerTween : Tween
+var timeLeftBarTween : Tween
 var messageBank : MessageBank
+var timeLeft : float = 0.0  # Current time left value
+var currentTimeLeftStage : int = 3  # Track which stage we're in (1, 2, or 3)
+var isShaking : bool = false  # Track if currently shaking
+var originalPosition : Vector2  # Store original position for shake effect
 
 # Chat system variables
 var chatUsers : Array[String] = [
@@ -53,6 +82,9 @@ func _ready() -> void:
 	# Instantiate message bank
 	messageBank = MessageBank.new()
 	
+	# Store original position for shake effect
+	originalPosition = position
+	
 	# Store reference to the shader material
 	if hypeTrainProgressBar and hypeTrainProgressBar.material:
 		progressBarMaterial = hypeTrainProgressBar.material as ShaderMaterial
@@ -63,10 +95,37 @@ func _ready() -> void:
 		chatTimer.timeout.connect(sendRandomChatMessage)
 		chatTimer.start()
 	
+	# Initialize time left progress bar
+	if timeLeftProgressBar:
+		timeLeftProgressBar.max_value = 100.0
+		timeLeft = 0.0  # Start with no time
+		timeLeftProgressBar.value = timeLeft
+		updateTimeLeftStage()  # Set initial color
+	
 	# Apply initial rank effects
 	applyRank0Effects()
 	
 	updateDisplay()
+
+func _process(delta: float) -> void:
+	# Decay time left based on current rank
+	if timeLeft > 0:
+		var decayRate : float = getDecayRateForRank()
+		timeLeft = max(0.0, timeLeft - (decayRate * delta))
+		
+		# Update progress bar
+		if timeLeftProgressBar:
+			timeLeftProgressBar.value = timeLeft
+		
+		# Check for stage changes
+		updateTimeLeftStage()
+		
+		# Check if we hit zero
+		if timeLeft == 0.0:
+			onTimeLeftReachedZero()
+	
+	# Apply shake effect based on current stage
+	applyShakeEffect()
 
 func onSuccessfullParry(parryResource : ParryResource, isPerfect : bool):
 	# Calculate points based on parry type and current rank multiplier
@@ -75,6 +134,9 @@ func onSuccessfullParry(parryResource : ParryResource, isPerfect : bool):
 	
 	# Add points to current score
 	addScore(pointsToAdd)
+	
+	# Add time to the time left bar based on points earned
+	addTimeLeft(pointsToAdd)
 
 func addScore(points : float) -> void:
 	currentScore += points
@@ -102,6 +164,9 @@ func updateDisplay() -> void:
 	
 	# Update progress bar
 	updateProgressBar()
+	
+	# Update viewer count
+	updateViewerCount()
 
 func updateProgressBar() -> void:
 	if currentRankIndex >= ranks.size() or not progressBarMaterial:
@@ -196,6 +261,8 @@ func getGradientForRank(rankIndex: int) -> GradientTexture1D:
 			return rank1Gradient
 		2:
 			return rank2Gradient
+		3:
+			return rank3Gradient
 		4:
 			return rank4Gradient
 		_:
@@ -203,8 +270,9 @@ func getGradientForRank(rankIndex: int) -> GradientTexture1D:
 
 ## Resets all effects to default state
 func resetEffectsToDefault() -> void:
-	# Reset any visual effects, sounds, etc. to default state
-	pass
+	# Reset pulse mode to off
+	if progressBarMaterial:
+		progressBarMaterial.set_shader_parameter("pulse_mode", false)
 
 ## Updates the chat timer interval based on current rank
 func updateChatInterval() -> void:
@@ -259,8 +327,11 @@ func applyRank2Effects() -> void:
 func applyRank3Effects() -> void:
 	resetEffectsToDefault()
 	updateChatInterval()
-	# Add any additional effects for rank 3 here
-	pass
+	# Change gradient to rank 3 gradient and enable pulse mode
+	if progressBarMaterial:
+		if rank3Gradient:
+			progressBarMaterial.set_shader_parameter("gradient_texture", rank3Gradient)
+		progressBarMaterial.set_shader_parameter("pulse_mode", true)
 
 ## Rank 4 effects (fifth/max rank)
 func applyRank4Effects() -> void:
@@ -306,3 +377,219 @@ func getMessagesForCurrentRank() -> Array[String]:
 			return messageBank.rank4Messages
 		_:
 			return []
+
+## Updates the viewer count label with a smooth lerp animation
+func updateViewerCount() -> void:
+	if not viewersLabel:
+		return
+	
+	# Kill existing viewer tween if it exists
+	if viewerTween:
+		viewerTween.kill()
+	
+	# Calculate target viewer count
+	var targetViewers : int = int(currentScore * viewerScoreMultiplier)
+	
+	# Get current viewer count from label (parse the text)
+	var currentViewers : int = 0
+	if viewersLabel.text.is_valid_int():
+		currentViewers = viewersLabel.text.to_int()
+	
+	# Only flash if viewers are increasing
+	if targetViewers > currentViewers:
+		playViewerFlash()
+	
+	# Create tween to lerp viewer count
+	viewerTween = create_tween()
+	viewerTween.tween_method(
+		func(value: float): viewersLabel.text = str(int(value)),
+		float(currentViewers),
+		float(targetViewers),
+		0.5  # Duration in seconds
+	).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+## Flashes the viewer label and eye icon when viewers increment
+func playViewerFlash() -> void:
+	# Flash viewer label
+	if viewersLabel:
+		# Kill existing flash tween if it exists
+		if viewerFlashTween:
+			viewerFlashTween.kill()
+		
+		var originalColor : Color = viewersLabel.modulate
+		
+		viewerFlashTween = create_tween()
+		viewerFlashTween.tween_property(viewersLabel, "modulate", viewerFlashColor, viewerFlashDuration)
+		viewerFlashTween.tween_property(viewersLabel, "modulate", originalColor, viewerFlashDuration)
+	
+	# Flash eye icon
+	if eyeIcon:
+		# Kill existing flash tween if it exists
+		if eyeFlashTween:
+			eyeFlashTween.kill()
+		
+		var originalColor : Color = eyeIcon.modulate
+		
+		eyeFlashTween = create_tween()
+		eyeFlashTween.tween_property(eyeIcon, "modulate", viewerFlashColor, viewerFlashDuration)
+		eyeFlashTween.tween_property(eyeIcon, "modulate", originalColor, viewerFlashDuration)
+	
+	# Scale up and down the viewer container
+	if viewerContainer:
+		# Kill existing container tween if it exists
+		if viewerContainerTween:
+			viewerContainerTween.kill()
+		
+		var originalScale : Vector2 = viewerContainer.scale
+		var flashScale : Vector2 = originalScale * viewerScaleMultiplier
+		
+		viewerContainerTween = create_tween()
+		viewerContainerTween.tween_property(viewerContainer, "scale", flashScale, viewerFlashDuration)
+		viewerContainerTween.tween_property(viewerContainer, "scale", originalScale, viewerFlashDuration)
+
+## Adds time to the time left progress bar
+func addTimeLeft(points: float) -> void:
+	if not timeLeftProgressBar:
+		return
+	
+	timeLeft = min(timeLeftProgressBar.max_value, timeLeft + points)
+	timeLeftProgressBar.value = timeLeft
+	
+	# Check for stage changes when adding time
+	updateTimeLeftStage()
+
+## Returns the decay rate for the current rank
+func getDecayRateForRank() -> float:
+	match currentRankIndex:
+		0:
+			return rank0DecayRate
+		1:
+			return rank1DecayRate
+		2:
+			return rank2DecayRate
+		3:
+			return rank3DecayRate
+		4:
+			return rank4DecayRate
+		_:
+			return rank0DecayRate
+
+## Checks and updates the time left bar stage/color
+func updateTimeLeftStage() -> void:
+	if not timeLeftProgressBar:
+		return
+	
+	var percentage : float = timeLeft / timeLeftProgressBar.max_value
+	var newStage : int = currentTimeLeftStage
+	
+	# Determine which stage we're in
+	if percentage >= 0.666:  # 2/3 to full
+		newStage = 1
+	elif percentage >= 0.333:  # 1/3 to 2/3
+		newStage = 2
+	else:  # 0 to 1/3
+		newStage = 3
+	
+	# Only update if stage changed
+	if newStage != currentTimeLeftStage:
+		currentTimeLeftStage = newStage
+		applyTimeLeftStageEffects()
+
+## Applies visual effects for the current time left stage
+func applyTimeLeftStageEffects() -> void:
+	if not timeLeftProgressBar:
+		return
+	
+	# Kill existing tween if it exists
+	if timeLeftBarTween:
+		timeLeftBarTween.kill()
+	
+	var targetColor : Color
+	
+	match currentTimeLeftStage:
+		1:
+			targetColor = stage1Color
+		2:
+			targetColor = stage2Color
+		3:
+			targetColor = stage3Color
+		_:
+			targetColor = stage3Color
+	
+	# Get the progress bar's StyleBox and tween its color
+	var stylebox : StyleBox = timeLeftProgressBar.get_theme_stylebox("fill")
+	if stylebox is StyleBoxFlat:
+		var styleboxFlat : StyleBoxFlat = stylebox as StyleBoxFlat
+		
+		timeLeftBarTween = create_tween()
+		timeLeftBarTween.tween_property(styleboxFlat, "bg_color", targetColor, 0.2)
+
+## Called when time left reaches zero
+func onTimeLeftReachedZero() -> void:
+	# Stop shaking
+	position = originalPosition
+	isShaking = false
+	
+	# Rank down to rank 0 (index 0)
+	currentRankIndex = 0
+	
+	# Reset score to the first rank's requirement (0)
+	currentScore = ranks[0].pointsRequired
+	
+	# Apply rank 0 effects (resets all effects)
+	applyRank0Effects()
+	
+	# Update displays
+	updateDisplay()
+	
+	chatManager.clearAllMessages()
+	
+	# Lerp viewers to zero
+	if viewersLabel:
+		# Kill existing viewer tween if it exists
+		if viewerTween:
+			viewerTween.kill()
+		
+		var currentViewers : int = 0
+		if viewersLabel.text.is_valid_int():
+			currentViewers = viewersLabel.text.to_int()
+		
+		viewerTween = create_tween()
+		viewerTween.tween_method(
+			func(value: float): viewersLabel.text = str(int(value)),
+			float(currentViewers),
+			0.0,
+			1.0  # Duration in seconds
+		).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+## Applies shake effect based on current time left stage
+func applyShakeEffect() -> void:
+	# Don't shake if time is zero
+	if timeLeft == 0.0:
+		position = originalPosition
+		isShaking = false
+		return
+	
+	var shakeIntensity : float = 0.0
+	
+	match currentTimeLeftStage:
+		1:
+			# No shake in stage 1 (white/safe)
+			shakeIntensity = 0.0
+			isShaking = false
+		2:
+			# Light shake in stage 2 (orange/warning)
+			shakeIntensity = stage2ShakeIntensity
+			isShaking = true
+		3:
+			# Heavy shake in stage 3 (red/danger)
+			shakeIntensity = stage3ShakeIntensity
+			isShaking = true
+	
+	# Apply shake or reset to original position
+	if isShaking:
+		var offsetX : float = randf_range(-shakeIntensity, shakeIntensity)
+		var offsetY : float = randf_range(-shakeIntensity, shakeIntensity)
+		position = originalPosition + Vector2(offsetX, offsetY)
+	else:
+		position = originalPosition
