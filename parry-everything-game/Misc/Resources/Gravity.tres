@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ParryResource" format=3 uid="uid://c6n7pya7giofy"]
+
+[ext_resource type="Script" uid="uid://b6xdr0uvh70xn" path="res://Misc/Resources/parryResource.gd" id="1_plc3d"]
+
+[resource]
+script = ExtResource("1_plc3d")
+metadata/_custom_type_script = "uid://b6xdr0uvh70xn"
