@@ -24,9 +24,16 @@ class_name CameraController
 @export var fov_lerp_speed: float = 5.0  # How quickly FOV changes
 @export var velocity_for_max_fov: float = 10.0  # Velocity at which max FOV is reached
 
+@export_group("Falling")
+@export var fallingDisplacementNode : Node3D
+@export var fallingDisplacement := 0.05  ## How much to move down when falling
+@export var fallingTweenTime := 0.3  ## Time for falling animation
+
 ##For keeping tracking of headbob on sine wave
 var headbobTime := 0.0
 var tiltTween : Tween
+var fallingTween : Tween
+var isFalling := false
 
 # State
 var pitch: float = 0.0
@@ -53,6 +60,12 @@ func _physics_process(delta: float) -> void:
 	
 	# Update FOV based on velocity
 	update_fov(delta)
+	
+	# Check for falling state change
+	var currentlyFalling = playerNode.velocity.y < 0
+	if currentlyFalling != isFalling:
+		isFalling = currentlyFalling
+		update_falling_displacement()
 
 func update_fov(delta: float) -> void:
 	# Get horizontal velocity (ignoring vertical component)
@@ -90,3 +103,15 @@ func tweenTilt(degree : float) -> void:
 		tiltTween.kill()
 	tiltTween = create_tween()
 	tiltTween.tween_property(cameraTiltNode, "rotation_degrees:z", degree, tiltTime)
+
+func update_falling_displacement() -> void:
+	# Kill previous tween if it exists
+	if fallingTween:
+		fallingTween.kill()
+	
+	# Create new tween
+	fallingTween = create_tween()
+	
+	# Move down when falling, back to normal when not falling
+	var targetY = -fallingDisplacement if isFalling else 0.0
+	fallingTween.tween_property(fallingDisplacementNode, "position:y", targetY, fallingTweenTime)

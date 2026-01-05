@@ -7,12 +7,14 @@
 [ext_resource type="Script" uid="uid://8ehx8qutulsk" path="res://Player/arms_animation_control.gd" id="3_k53q1"]
 [ext_resource type="Script" uid="uid://bsrtdxxq448s0" path="res://Player/parry_manager.gd" id="6_fhl08"]
 [ext_resource type="Resource" uid="uid://bxabapcwrol7i" path="res://Misc/Resources/GroundContact.tres" id="6_vtle1"]
+[ext_resource type="Resource" uid="uid://c6n7pya7giofy" path="res://Misc/Resources/Gravity.tres" id="7_gu6f8"]
 [ext_resource type="AudioStream" uid="uid://dm8lqcp7xvahm" path="res://Assets/Sounds/normalParry.mp3" id="8_00tjw"]
 [ext_resource type="AudioStream" uid="uid://dg5cji4e4lp4b" path="res://Assets/Sounds/perfectParry.mp3" id="9_x3vf3"]
 [ext_resource type="Script" uid="uid://ycxd34qryoel" path="res://Player/hud.gd" id="10_x3vf3"]
 [ext_resource type="Shader" uid="uid://c7s2rxd036vgv" path="res://Assets/Shaders/black_bars.gdshader" id="11_apopc"]
 [ext_resource type="Shader" uid="uid://dirs2l3xmyyp3" path="res://Assets/Shaders/speed_lines.gdshader" id="12_5htga"]
 [ext_resource type="PackedScene" uid="uid://bc51ka7ss12sx" path="res://Player/UI/SubathonMeter/subathon_style_meter.tscn" id="13_p5o4e"]
+[ext_resource type="Shader" uid="uid://c42badwu1s4cp" path="res://Assets/Shaders/vignette.gdshader" id="15_dkpta"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hvfyp"]
 
@@ -41,19 +43,29 @@ shader_parameter/mask_size = 0.1
 shader_parameter/mask_edge = 0.5
 shader_parameter/animation_speed = 20.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lfmf2"]
+shader = ExtResource("15_dkpta")
+shader_parameter/inner_radius = 0.42
+shader_parameter/outer_radius = 1.0
+shader_parameter/vignette_strength = 1.0
+shader_parameter/dither_strength = 0.03
+shader_parameter/vignette_color = Color(0, 0, 0, 1)
+
 [node name="Player" type="CharacterBody3D" unique_id=559422446]
 script = ExtResource("1_gwnis")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=27199856]
 shape = SubResource("CapsuleShape3D_hvfyp")
 
-[node name="CameraRoot" type="Node3D" parent="." unique_id=2075988183 node_paths=PackedStringArray("playerNode", "camera", "viewBobbingNode", "cameraTiltNode")]
+[node name="CameraRoot" type="Node3D" parent="." unique_id=2075988183 node_paths=PackedStringArray("playerNode", "camera", "viewBobbingNode", "cameraTiltNode", "fallingDisplacementNode")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.035, 0, -0.18)
 script = ExtResource("2_4ntmi")
 playerNode = NodePath("..")
 camera = NodePath("CameraTilt/ViewBobbing/Camera3D")
 viewBobbingNode = NodePath("CameraTilt/ViewBobbing")
 cameraTiltNode = NodePath("CameraTilt")
+fallingDisplacementNode = NodePath("FallingDisplacement")
+fallingTweenTime = 0.8
 
 [node name="CameraTilt" type="Node3D" parent="CameraRoot" unique_id=1903234394]
 
@@ -62,14 +74,16 @@ cameraTiltNode = NodePath("CameraTilt")
 [node name="Camera3D" type="Camera3D" parent="CameraRoot/CameraTilt/ViewBobbing" unique_id=272374210]
 fov = 80.0
 
-[node name="Arms" type="Node3D" parent="CameraRoot" unique_id=622086343 node_paths=PackedStringArray("armsAnimationPlayer")]
+[node name="FallingDisplacement" type="Node3D" parent="CameraRoot" unique_id=141526293]
+
+[node name="Arms" type="Node3D" parent="CameraRoot/FallingDisplacement" unique_id=622086343 node_paths=PackedStringArray("armsAnimationPlayer")]
 transform = Transform3D(-1.705, 0, -1.4905584e-07, 0, 1.705, 0, 1.4905584e-07, 0, -1.705, 0.035, 0, 0.18)
 script = ExtResource("3_k53q1")
 armsAnimationPlayer = NodePath("first_person_animations_v2/AnimationPlayer")
 
-[node name="first_person_animations_v2" parent="CameraRoot/Arms" unique_id=1054650181 instance=ExtResource("3_gwnis")]
+[node name="first_person_animations_v2" parent="CameraRoot/FallingDisplacement/Arms" unique_id=1054650181 instance=ExtResource("3_gwnis")]
 
-[node name="Skeleton3D" parent="CameraRoot/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 862156670) index="0" unique_id=1008763252]
+[node name="Skeleton3D" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 862156670) index="0" unique_id=1008763252]
 bones/1/rotation = Quaternion(-0.48333433, -0.38415936, -0.7320739, 0.2878843)
 bones/2/rotation = Quaternion(-1.7539136e-08, 1.1953957e-08, -0.7568831, 0.6535503)
 bones/3/rotation = Quaternion(0.050190784, 0.17272587, -0.14460105, 0.9730042)
@@ -122,25 +136,29 @@ bones/49/rotation = Quaternion(-0.71055305, -6.675002e-09, -1.8022138e-09, 0.703
 bones/52/position = Vector3(-0.24597198, -0.13598143, 0.3614115)
 bones/52/rotation = Quaternion(-0.12196328, -0.57560873, -0.696509, 0.4107003)
 
-[node name="AnimationPlayer" parent="CameraRoot/Arms/first_person_animations_v2" index="1" unique_id=23678671]
+[node name="AnimationPlayer" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2" index="1" unique_id=23678671]
 process_mode = 3
 next/FP_Idle_Pose = &"FP_Idle_Pose"
 blend_times = [&"FP_Idle_Pose", &"FP_Idle_Pose", 0.2, &"FP_Idle_Pose", &"FP_Parry_Stance", 0.2, &"FP_Idle_Pose", &"FP_Parry_Success", 0.2, &"FP_Idle_Pose", &"FP_Stretching_Hands", 0.2]
 
-[node name="PlayerMovement" type="Node" parent="." unique_id=2063233654 node_paths=PackedStringArray("body", "camera_controller")]
+[node name="PlayerMovement" type="Node" parent="." unique_id=2063233654 node_paths=PackedStringArray("body", "vignetteColorRect", "camera_controller")]
 script = ExtResource("3_btcbx")
 body = NodePath("..")
+vignetteColorRect = NodePath("../HUD/Vingette")
 camera_controller = NodePath("../CameraRoot")
 groundParryResource = ExtResource("6_vtle1")
+gravityParryResource = ExtResource("7_gu6f8")
 acceleration = 18.94
 friction = 24.165
+
+[node name="GravityAudioCue" type="AudioStreamPlayer" parent="PlayerMovement" unique_id=2001744799]
 
 [node name="ParryManager" type="Node" parent="." unique_id=1569983672 node_paths=PackedStringArray("parryTimer", "parryCooldownTimer", "perfectParryPauseTimer", "fpAnimationManager", "normalParrySound", "perfectParrySound", "parryFlash")]
 script = ExtResource("6_fhl08")
 parryTimer = NodePath("ParryTimer")
 parryCooldownTimer = NodePath("ParryCooldownTimer")
 perfectParryPauseTimer = NodePath("PerfectParryPauseTimer")
-fpAnimationManager = NodePath("../CameraRoot/Arms")
+fpAnimationManager = NodePath("../CameraRoot/FallingDisplacement/Arms")
 normalParrySound = NodePath("NormalParry")
 perfectParrySound = NodePath("PerfectParry")
 parryFlash = NodePath("../HUD/ParryFlash")
@@ -178,6 +196,7 @@ mouse_filter = 2
 color = Color(1, 1, 1, 0.30588236)
 
 [node name="BlackBars" type="ColorRect" parent="HUD" unique_id=1688576618]
+visible = false
 material = SubResource("ShaderMaterial_5htga")
 anchors_preset = 15
 anchor_right = 1.0
@@ -206,8 +225,18 @@ offset_right = -25.0
 offset_bottom = 296.0
 grow_horizontal = 0
 
+[node name="Vingette" type="ColorRect" parent="HUD" unique_id=474411812]
+visible = false
+material = SubResource("ShaderMaterial_lfmf2")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
 [connection signal="tilt" from="PlayerMovement" to="CameraRoot" method="tilt"]
 [connection signal="timeout" from="ParryManager/ParryTimer" to="ParryManager" method="_on_parry_timer_timeout"]
 [connection signal="timeout" from="ParryManager/ParryCooldownTimer" to="ParryManager" method="_on_parry_cooldown_timer_timeout"]
 
-[editable path="CameraRoot/Arms/first_person_animations_v2"]
+[editable path="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2"]

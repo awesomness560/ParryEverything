@@ -4,4 +4,11 @@
 
 [resource]
 script = ExtResource("1_plc3d")
+parryType = 0
+perfectParryWindow = 0.2
+normalParryWindow = 0.3
+name = "Gravity Parry"
+normalParryPoints = 50.0
+perfectParryPoints = 150.0
+chatMessageResponses = Array[String](["Did he parry GRAVITY?????"])
 metadata/_custom_type_script = "uid://b6xdr0uvh70xn"

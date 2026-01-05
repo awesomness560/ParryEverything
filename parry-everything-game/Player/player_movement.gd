@@ -5,8 +5,10 @@ signal tilt(inputVector : Vector2)
 
 # References
 @export var body: Player
+@export var vignetteColorRect : ColorRect
 @export var camera_controller: CameraController
 @export var groundParryResource : ParryResource
+@export var gravityParryResource : ParryResource
 # Movement parameters
 @export_group("Ground Movement")
 @export var base_speed: float = 7.0
@@ -24,6 +26,7 @@ signal tilt(inputVector : Vector2)
 # State
 var current_velocity: Vector3 = Vector3.ZERO
 var was_in_air: bool = false
+var previous_y_velocity: float = 0.0
 
 # Boost tracking
 var active_boosts: Array[Dictionary] = []  # Each boost has: {velocity: Vector3, decay_rate: float}
@@ -33,11 +36,15 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready() -> void:
 	groundParryResource.successfulParryCallback = apply_ground_parry_boost
+	gravityParryResource.successfulParryCallback = apply_gravity_parry_boost
 
 func _physics_process(delta: float) -> void:
 	# Get input
 	var input_dir = get_input_direction()
 	var wish_dir = get_camera_relative_direction(input_dir)
+	
+	#Handle Effects
+	vignetteColorRect.visible = body.velocity.y < 0
 	
 	# Handle jumping
 	if Input.is_action_just_pressed("jump") and body.is_on_floor():
@@ -52,6 +59,13 @@ func _physics_process(delta: float) -> void:
 	# Apply gravity
 	if not body.is_on_floor():
 		current_velocity.y -= gravity * delta
+	
+	# Detect when vertical velocity switches from positive to negative (apex of jump)
+	if previous_y_velocity > 0.0 and current_velocity.y < 0.0:
+		SignalBus.dealDamage.emit(gravityParryResource)
+	
+	# Store current y velocity for next frame
+	previous_y_velocity = current_velocity.y
 	
 	# Update and decay all active boosts
 	update_boosts(delta)
@@ -173,3 +187,26 @@ func apply_ground_parry_boost(is_perfect: bool) -> void:
 	
 	#Effects
 	_CameraShake3D._custom_shake(3, 0.2)
+
+func apply_gravity_parry_boost(is_perfect: bool) -> void:
+	"""Apply a boost when successfully parrying at the apex of a jump"""
+	# Get current horizontal movement direction
+	var horizontal_vel = Vector3(current_velocity.x, 0, current_velocity.z)
+	var move_dir = Vector3.ZERO
+	if horizontal_vel.length() > 0.1:
+		move_dir = horizontal_vel.normalized()
+	
+	# Determine boost strength based on parry type
+	# Much more weighted to vertical than horizontal
+	var horizontal_boost = 8.0 if is_perfect else 5.0
+	var vertical_boost = 18.0 if is_perfect else 12.0
+	
+	# Apply upward velocity directly
+	current_velocity.y = vertical_boost
+	
+	# Add horizontal boost in current movement direction
+	if move_dir.length() > 0.1:
+		add_impulse(move_dir * horizontal_boost, 4.0)
+	
+	#Effects
+	_CameraShake3D._custom_shake(2, 0.15)
