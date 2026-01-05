@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://1b0jwujo5mdm"]
+
+[ext_resource type="Script" uid="uid://bym8adytbj7vb" path="res://Enemies/Laser/laser_enemy.gd" id="1_f0s5n"]
+[ext_resource type="Texture2D" uid="uid://m4cju0mr8s3h" path="res://Assets/Particles/trace_06.png" id="2_v3hqn"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_buepd"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f0s5n"]
+albedo_color = Color(1, 0.8117647, 0.2509804, 1)
+emission_enabled = true
+emission = Color(1, 0.8117647, 0.2509804, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="Curve" id="Curve_7f2vb"]
+_limits = [0.0, 1.0, 0.0, 92.9]
+_data = [Vector2(0, 119.86), 0.0, 0.0, 0, 0]
+point_count = 1
+
+[sub_resource type="CurveTexture" id="CurveTexture_7myrs"]
+curve = SubResource("Curve_7f2vb")
+
+[sub_resource type="Curve" id="Curve_v3hqn"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.33418226), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_7myrs"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_32voo"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveXYZTexture" id="CurveXYZTexture_t73sw"]
+curve_x = SubResource("Curve_v3hqn")
+curve_y = SubResource("Curve_7myrs")
+curve_z = SubResource("Curve_32voo")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_32voo"]
+particle_flag_align_y = true
+emission_shape_scale = Vector3(4, 4, 4)
+emission_shape = 1
+emission_sphere_radius = 1.0
+spread = 180.0
+flatness = 1.0
+gravity = Vector3(0, 0, 0)
+radial_accel_min = -60.0
+radial_accel_max = -40.0
+scale_curve = SubResource("CurveXYZTexture_t73sw")
+color = Color(1, 0.54901963, 0.3137255, 1)
+emission_curve = SubResource("CurveTexture_7myrs")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t73sw"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("2_v3hqn")
+
+[sub_resource type="QuadMesh" id="QuadMesh_5uikk"]
+material = SubResource("StandardMaterial3D_t73sw")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v3hqn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7f2vb"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_v3hqn"]
+radius = 17.617
+
+[node name="LaserEnemy" type="Node3D" unique_id=1303688957 node_paths=PackedStringArray("visualsNode", "spinningCenterNode", "amountGatheringParticles")]
+script = ExtResource("1_f0s5n")
+visualsNode = NodePath("Visuals")
+spinningCenterNode = NodePath("Visuals/SpinningCenter")
+amountGatheringParticles = NodePath("Visuals/Core/LaserGatheringEffects")
+
+[node name="Visuals" type="Node3D" parent="." unique_id=1170579411]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+
+[node name="Core" type="MeshInstance3D" parent="Visuals" unique_id=1092263609]
+mesh = SubResource("SphereMesh_buepd")
+surface_material_override/0 = SubResource("StandardMaterial3D_f0s5n")
+
+[node name="LaserGatheringEffects" type="GPUParticles3D" parent="Visuals/Core" unique_id=1950230035]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6024771, 0, 7.00465e-08)
+emitting = false
+amount = 100
+lifetime = 0.2
+transform_align = 3
+process_material = SubResource("ParticleProcessMaterial_32voo")
+draw_pass_1 = SubResource("QuadMesh_5uikk")
+
+[node name="SpinningCenter" type="Node3D" parent="Visuals" unique_id=604877986]
+
+[node name="Spinning1" type="MeshInstance3D" parent="Visuals/SpinningCenter" unique_id=528133030]
+transform = Transform3D(0.54, 0, 0, 0, 1.66, 0, 0, 0, 0.54, 0, 3.095345, 0)
+mesh = SubResource("CylinderMesh_v3hqn")
+surface_material_override/0 = SubResource("StandardMaterial3D_7f2vb")
+
+[node name="Spinning3" type="MeshInstance3D" parent="Visuals/SpinningCenter" unique_id=744575087]
+transform = Transform3D(0.54, 0, 0, 0, 1.66, 0, 0, 0, 0.54, 0, -3.2081943, 0)
+mesh = SubResource("CylinderMesh_v3hqn")
+surface_material_override/0 = SubResource("StandardMaterial3D_7f2vb")
+
+[node name="Spinning2" type="MeshInstance3D" parent="Visuals/SpinningCenter" unique_id=981494832]
+transform = Transform3D(0.54, 0, 0, 0, -7.25609e-08, -0.54, 0, 1.66, -2.360415e-08, 0, 0, -3.147647)
+mesh = SubResource("CylinderMesh_v3hqn")
+surface_material_override/0 = SubResource("StandardMaterial3D_7f2vb")
+
+[node name="Spinning4" type="MeshInstance3D" parent="Visuals/SpinningCenter" unique_id=408826228]
+transform = Transform3D(0.54, 0, 0, 0, -7.25609e-08, -0.54, 0, 1.66, -2.360415e-08, 0, 0, 3.1019502)
+mesh = SubResource("CylinderMesh_v3hqn")
+surface_material_override/0 = SubResource("StandardMaterial3D_7f2vb")
+
+[node name="TargetingRange" type="Area3D" parent="." unique_id=1072926406]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TargetingRange" unique_id=1729486401]
+shape = SubResource("SphereShape3D_v3hqn")
+
+[connection signal="body_entered" from="TargetingRange" to="." method="_on_targeting_range_body_entered"]
+[connection signal="body_exited" from="TargetingRange" to="." method="_on_targeting_range_body_exited"]
