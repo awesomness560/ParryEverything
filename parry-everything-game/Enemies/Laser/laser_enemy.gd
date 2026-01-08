@@ -44,7 +44,7 @@ func change_state(new_state: State) -> void:
 				idleTween.kill()
 			if visualsSpinTween:
 				visualsSpinTween.kill()
-			visualsNode.rotation_degrees.x = 0.0
+			visualsNode.rotation_degrees.y = 90.0
 		State.ATTACKING:
 			# Stop attacking tweens
 			if attackingTween:
