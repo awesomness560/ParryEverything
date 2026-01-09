@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ParryResource" format=3 uid="uid://3yqdnpqlsvou"]
+
+[ext_resource type="Script" uid="uid://b6xdr0uvh70xn" path="res://Misc/Resources/parryResource.gd" id="1_c3cuo"]
+
+[resource]
+script = ExtResource("1_c3cuo")
+damage = 20.0
+perfectParryWindow = 0.2
+normalParryWindow = 0.4
+normalParryPoints = 50.0
+perfectParryPoints = 100.0
+metadata/_custom_type_script = "uid://b6xdr0uvh70xn"

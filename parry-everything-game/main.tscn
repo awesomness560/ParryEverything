@@ -20,6 +20,7 @@ sky = SubResource("Sky_7mycd")
 ambient_light_source = 3
 reflected_light_source = 2
 glow_enabled = true
+glow_blend_mode = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_1bvp3"]
 
@@ -44,7 +45,7 @@ environment = SubResource("Environment_272bh")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=2024745931]
 stream = ExtResource("5_lquwl")
-volume_db = -20.604
+volume_db = -42.21
 autoplay = true
 
 [node name="Player" parent="." unique_id=559422446 instance=ExtResource("3_h2yge")]
@@ -111,4 +112,4 @@ surface_material_override/0 = SubResource("StandardMaterial3D_lquwl")
 shape = SubResource("BoxShape3D_7mycd")
 
 [node name="LaserEnemy" parent="." unique_id=1303688957 instance=ExtResource("6_7mycd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.8973503, 5.5750523, -8.407674)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.995386, 5.5750523, -2.6293318)

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://b00sj4ciimor0"]
+
+[ext_resource type="Shader" uid="uid://ba6vwo4dn2pbk" path="res://Assets/Shaders/health_bar.gdshader" id="1_tc80r"]
+[ext_resource type="Script" uid="uid://b3qc0utosixxo" path="res://Misc/health_bar.gd" id="2_3lg5e"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_eg1cs"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m30vn"]
+render_priority = 0
+shader = ExtResource("1_tc80r")
+shader_parameter/use_billboard = true
+shader_parameter/health_color = Color(0, 1, 0, 1)
+shader_parameter/damage_color = Color(1, 0, 0, 1)
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 0.074000003515
+shader_parameter/health = 0.7
+shader_parameter/damage = 0.9
+
+[node name="HealthBar" type="MeshInstance3D" unique_id=1165032704]
+transform = Transform3D(3.3779695, 0, 0, 0, 0.35690585, 0, 0, 0, 1.0166657, 0, 0, 0)
+mesh = SubResource("QuadMesh_eg1cs")
+surface_material_override/0 = SubResource("ShaderMaterial_m30vn")
+script = ExtResource("2_3lg5e")
+clampHealthToNewMax = false
+
+[node name="DamageBarTimer" type="Timer" parent="." unique_id=759945170]
+one_shot = true

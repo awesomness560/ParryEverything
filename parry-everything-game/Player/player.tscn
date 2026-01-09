@@ -51,8 +51,10 @@ shader_parameter/vignette_strength = 1.0
 shader_parameter/dither_strength = 0.03
 shader_parameter/vignette_color = Color(0, 0, 0, 1)
 
-[node name="Player" type="CharacterBody3D" unique_id=559422446]
+[node name="Player" type="CharacterBody3D" unique_id=559422446 node_paths=PackedStringArray("camera", "inFrontCameraNode")]
 script = ExtResource("1_gwnis")
+camera = NodePath("CameraRoot/CameraTilt/ViewBobbing/Camera3D")
+inFrontCameraNode = NodePath("CameraRoot/CameraTilt/ViewBobbing/Camera3D/InFrontCamera")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=27199856]
 shape = SubResource("CapsuleShape3D_hvfyp")
@@ -74,6 +76,9 @@ fallingTweenTime = 0.8
 [node name="Camera3D" type="Camera3D" parent="CameraRoot/CameraTilt/ViewBobbing" unique_id=272374210]
 fov = 80.0
 
+[node name="InFrontCamera" type="Node3D" parent="CameraRoot/CameraTilt/ViewBobbing/Camera3D" unique_id=1864391355]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.307332)
+
 [node name="FallingDisplacement" type="Node3D" parent="CameraRoot" unique_id=141526293]
 
 [node name="Arms" type="Node3D" parent="CameraRoot/FallingDisplacement" unique_id=622086343 node_paths=PackedStringArray("armsAnimationPlayer")]
@@ -83,7 +88,7 @@ armsAnimationPlayer = NodePath("first_person_animations_v2/AnimationPlayer")
 
 [node name="first_person_animations_v2" parent="CameraRoot/FallingDisplacement/Arms" unique_id=1054650181 instance=ExtResource("3_gwnis")]
 
-[node name="Skeleton3D" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 862156670) index="0" unique_id=1008763252]
+[node name="Skeleton3D" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2/Arms_Rig" parent_id_path=PackedInt32Array(1054650181, 1510158539) index="0" unique_id=1312063648]
 bones/1/rotation = Quaternion(-0.48333433, -0.38415936, -0.7320739, 0.2878843)
 bones/2/rotation = Quaternion(-1.7539136e-08, 1.1953957e-08, -0.7568831, 0.6535503)
 bones/3/rotation = Quaternion(0.050190784, 0.17272587, -0.14460105, 0.9730042)
@@ -136,7 +141,7 @@ bones/49/rotation = Quaternion(-0.71055305, -6.675002e-09, -1.8022138e-09, 0.703
 bones/52/position = Vector3(-0.24597198, -0.13598143, 0.3614115)
 bones/52/rotation = Quaternion(-0.12196328, -0.57560873, -0.696509, 0.4107003)
 
-[node name="AnimationPlayer" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2" index="1" unique_id=23678671]
+[node name="AnimationPlayer" parent="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2" index="1" unique_id=461424768]
 process_mode = 3
 next/FP_Idle_Pose = &"FP_Idle_Pose"
 blend_times = [&"FP_Idle_Pose", &"FP_Idle_Pose", 0.2, &"FP_Idle_Pose", &"FP_Parry_Stance", 0.2, &"FP_Idle_Pose", &"FP_Parry_Success", 0.2, &"FP_Idle_Pose", &"FP_Stretching_Hands", 0.2]

@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://cbc1ib7n65ces"]
+
+[ext_resource type="Script" uid="uid://b6xdr0uvh70xn" path="res://Misc/Resources/parryResource.gd" id="1_enfo0"]
+[ext_resource type="PackedScene" uid="uid://cdltdlvu3ok6r" path="res://Player/player.tscn" id="1_gtd5v"]
+[ext_resource type="Texture2D" uid="uid://b0piuq26dlr0o" path="res://Assets/prototypeTexture1.png" id="2_enfo0"]
+
+[sub_resource type="GDScript" id="GDScript_gtd5v"]
+resource_name = "sun"
+script/source = "extends Node3D
+
+@onready var world_environment: WorldEnvironment = $WorldEnvironment
+@export var parry : ParryResource
+
+var worldResource : ProceduralSkyMaterial
+
+func _ready() -> void:
+	worldResource = world_environment.environment.sky.sky_material
+	parry.successfulParryCallback = onSuccess
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"fling_me\"):
+		sun()
+
+func sun():
+	var tween := create_tween()
+	tween.tween_property(worldResource, \"sun_angle_max\", 100, 3)
+	tween.tween_property(worldResource, \"energy_multiplier\", 3, 0.5)
+	
+	await tween.finished
+	
+	SignalBus.dealDamage.emit(parry)
+	pass
+
+func onSuccess(perfect : bool):
+	worldResource.sun_angle_max = 30
+	worldResource.energy_multiplier = 1
+"
+
+[sub_resource type="Resource" id="Resource_gxffh"]
+script = ExtResource("1_enfo0")
+parryType = 0
+perfectParryWindow = 0.4
+normalParryWindow = 0.6
+normalParryPoints = 1000.0
+perfectParryPoints = 10000.0
+metadata/_custom_type_script = "uid://b6xdr0uvh70xn"
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gxffh"]
+sky_top_color = Color(0.30817404, 0.43440664, 0.73558646, 1)
+sky_horizon_color = Color(0.5886029, 0.5968811, 0.61344165, 1)
+
+[sub_resource type="Sky" id="Sky_dhcfm"]
+sky_material = SubResource("ProceduralSkyMaterial_gxffh")
+
+[sub_resource type="Environment" id="Environment_2nmf8"]
+background_mode = 2
+sky = SubResource("Sky_dhcfm")
+
+[sub_resource type="BoxMesh" id="BoxMesh_e3tf3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xtwxc"]
+albedo_texture = ExtResource("2_enfo0")
+uv1_scale = Vector3(7.545, 7.545, 7.545)
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3sd0k"]
+
+[node name="Node3D" type="Node3D" unique_id=17898243]
+script = SubResource("GDScript_gtd5v")
+parry = SubResource("Resource_gxffh")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1539886995]
+environment = SubResource("Environment_2nmf8")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1878121727]
+transform = Transform3D(1, 0, 0, 0, 0.67517835, 0.73765457, 0, -0.73765457, 0.67517835, 0, 0, 0)
+light_color = Color(0.8497706, 0.71742845, 0.43238026, 1)
+light_energy = 3.349
+
+[node name="Player" parent="." unique_id=559422446 instance=ExtResource("1_gtd5v")]
+
+[node name="Floor5" type="MeshInstance3D" parent="." unique_id=622898570]
+transform = Transform3D(32.419567, 0, 0, 0, 0.5117212, 0, 0, 0, 32.419567, 0, -1.9895048, -0.22399545)
+mesh = SubResource("BoxMesh_e3tf3")
+surface_material_override/0 = SubResource("StandardMaterial3D_xtwxc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor5" unique_id=2012044153]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor5/StaticBody3D" unique_id=881652226]
+shape = SubResource("BoxShape3D_3sd0k")
