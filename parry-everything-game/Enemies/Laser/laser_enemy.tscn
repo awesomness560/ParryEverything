@@ -9,6 +9,7 @@
 [ext_resource type="Shader" uid="uid://c2gp5scaitug8" path="res://Assets/Shaders/shockwave.gdshader" id="7_eg1cs"]
 [ext_resource type="Shader" uid="uid://ba6vwo4dn2pbk" path="res://Assets/Shaders/health_bar.gdshader" id="7_m30vn"]
 [ext_resource type="Script" uid="uid://iruae0nb5bfq" path="res://Enemies/Laser/shockwave.gd" id="8_m30vn"]
+[ext_resource type="PackedScene" uid="uid://bwby2dlxgtyno" path="res://Enemies/Laser/death_particles.tscn" id="10_ibxdp"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_buepd"]
 
@@ -147,6 +148,7 @@ visualsNode = NodePath("Visuals")
 spinningCenterNode = NodePath("Visuals/SpinningCenter")
 amountGatheringParticles = NodePath("Visuals/Core/LaserGatheringEffects")
 laserFinishParticles = NodePath("Extender/Particles")
+deathParticles = ExtResource("10_ibxdp")
 chargeUpAudio = NodePath("ChargeUpAudio")
 healthBar = NodePath("HealthBar")
 shockwaveEffect = NodePath("Shockwave")

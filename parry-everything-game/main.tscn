@@ -39,6 +39,16 @@ albedo_texture = ExtResource("2_h2yge")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kek77"]
 
+[sub_resource type="Resource" id="Resource_272bh"]
+resource_local_to_scene = true
+script = ExtResource("7_272bh")
+damage = 20.0
+perfectParryWindow = 0.2
+normalParryWindow = 0.4
+normalParryPoints = 50.0
+perfectParryPoints = 100.0
+metadata/_custom_type_script = "uid://b6xdr0uvh70xn"
+
 [sub_resource type="Resource" id="Resource_5vw27"]
 resource_local_to_scene = true
 script = ExtResource("7_272bh")
@@ -80,7 +90,7 @@ volume_db = -42.21
 autoplay = true
 
 [node name="Player" parent="." unique_id=559422446 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2997768, -0.0040740967)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2997768, 13.410364)
 
 [node name="Floor" type="MeshInstance3D" parent="." unique_id=979706308]
 transform = Transform3D(32.419567, 0, 0, 0, 0.5117212, 0, 0, 0, 32.419567, 0, -0.22969645, -0.811957)
@@ -93,7 +103,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_lquwl")
 shape = SubResource("BoxShape3D_7mycd")
 
 [node name="Cube" type="MeshInstance3D" parent="." unique_id=2146122419]
-transform = Transform3D(2.3237407, 0, 0, 0, 2.3237407, 0, 0, 0, 2.3237407, 0, 1.1772532, 4.1574135)
+transform = Transform3D(2.3237407, 0, 0, 0, 2.3237407, 0, 0, 0, 2.3237407, -11.358913, 1.1772532, 4.1574135)
 mesh = SubResource("BoxMesh_272bh")
 surface_material_override/0 = SubResource("StandardMaterial3D_5vw27")
 
@@ -144,12 +154,16 @@ shape = SubResource("BoxShape3D_7mycd")
 
 [node name="LaserEnemy" parent="." unique_id=1303688957 instance=ExtResource("6_7mycd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.646812, 5.5750523, -57.417747)
-parryResource = SubResource("Resource_5vw27")
+parryResource = SubResource("Resource_272bh")
 
 [node name="LaserEnemy3" parent="." unique_id=1584242521 instance=ExtResource("6_7mycd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.527916, 5.5750523, -36.871376)
-parryResource = SubResource("Resource_kek77")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.607315, 5.5750523, -38.83258)
+parryResource = SubResource("Resource_5vw27")
 
 [node name="LaserEnemy2" parent="." unique_id=1312958583 instance=ExtResource("6_7mycd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.995386, 5.5750523, -132.77379)
+parryResource = SubResource("Resource_kek77")
+
+[node name="LaserEnemy4" parent="." unique_id=1494507525 instance=ExtResource("6_7mycd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.995386, 5.5750523, -196.92441)
 parryResource = SubResource("Resource_4c57u")

@@ -19,6 +19,8 @@ enum State {
 @export var amountGatheringParticles : GPUParticles3D
 ##Particles that emit when laser fires
 @export var laserFinishParticles : GPUParticles3D
+##Particles that emit on death
+@export var deathParticles : PackedScene
 ##The charge up sound node
 @export var chargeUpAudio : AudioStreamPlayer3D
 ##Health Bar reference
@@ -249,6 +251,11 @@ func onSuccesfullyParried(isPerfectParry : bool):
 		doDie()
 
 func doDie():
+	var localDeathParticles := deathParticles.instantiate() as GPUParticles3D
+	get_parent().add_child(localDeathParticles)
+	localDeathParticles.global_position = global_position
+	localDeathParticles.global_rotation = global_rotation
+	localDeathParticles.emitting = true
 	queue_free()
 
 #region Signals

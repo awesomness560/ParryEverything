@@ -158,11 +158,13 @@ friction = 24.165
 
 [node name="GravityAudioCue" type="AudioStreamPlayer" parent="PlayerMovement" unique_id=2001744799]
 
-[node name="ParryManager" type="Node" parent="." unique_id=1569983672 node_paths=PackedStringArray("parryTimer", "parryCooldownTimer", "perfectParryPauseTimer", "fpAnimationManager", "normalParrySound", "perfectParrySound", "parryFlash")]
+[node name="ParryManager" type="Node" parent="." unique_id=1569983672 node_paths=PackedStringArray("parryTimer", "parryCooldownTimer", "perfectParryPauseTimer", "autoParryTimer", "fpAnimationManager", "normalParrySound", "perfectParrySound", "parryFlash")]
 script = ExtResource("6_fhl08")
+autoParryWindow = 0.2
 parryTimer = NodePath("ParryTimer")
 parryCooldownTimer = NodePath("ParryCooldownTimer")
 perfectParryPauseTimer = NodePath("PerfectParryPauseTimer")
+autoParryTimer = NodePath("AutoParryTimer")
 fpAnimationManager = NodePath("../CameraRoot/FallingDisplacement/Arms")
 normalParrySound = NodePath("NormalParry")
 perfectParrySound = NodePath("PerfectParry")
@@ -177,6 +179,9 @@ one_shot = true
 [node name="PerfectParryPauseTimer" type="Timer" parent="ParryManager" unique_id=1661723924]
 process_mode = 3
 wait_time = 0.2
+one_shot = true
+
+[node name="AutoParryTimer" type="Timer" parent="ParryManager" unique_id=97905244]
 one_shot = true
 
 [node name="NormalParry" type="AudioStreamPlayer" parent="ParryManager" unique_id=611038121]
@@ -243,5 +248,6 @@ mouse_filter = 2
 [connection signal="tilt" from="PlayerMovement" to="CameraRoot" method="tilt"]
 [connection signal="timeout" from="ParryManager/ParryTimer" to="ParryManager" method="_on_parry_timer_timeout"]
 [connection signal="timeout" from="ParryManager/ParryCooldownTimer" to="ParryManager" method="_on_parry_cooldown_timer_timeout"]
+[connection signal="timeout" from="ParryManager/AutoParryTimer" to="ParryManager" method="_on_auto_parry_timer_timeout"]
 
 [editable path="CameraRoot/FallingDisplacement/Arms/first_person_animations_v2"]

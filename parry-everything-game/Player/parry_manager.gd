@@ -3,11 +3,14 @@ class_name ParryManager
 
 @export var maxParryWindow : float = 0.6
 @export var parryCooldownPenaltyTime : float = 0.3
+@export var autoParryWindow : float = 0.15
 ##The timer to keep track of how long we have been parrying
 @export var parryTimer : Timer
 ##The timer to keep track of the cooldown (only triggered if nothing is parried before timeout)
 @export var parryCooldownTimer : Timer
 @export var perfectParryPauseTimer : Timer
+##The timer to keep track of the auto-parry grace period
+@export var autoParryTimer : Timer
 ##The reference to the first person animation manager
 @export var fpAnimationManager : ArmsAnimationController
 @export var normalParrySound : AudioStreamPlayer
@@ -16,27 +19,48 @@ class_name ParryManager
 
 var isParrying : bool = false
 var canParry : bool = true
+var isInAutoParryWindow : bool = false
+var wasAutoParryPerfect : bool = false
 var activeParryWindows : Array[Dictionary] = []  # Stores {resource: ParryResource, timer: Timer}
 
 func _ready() -> void:
 	SignalBus.dealDamage.connect(receiveDamage)
 	parryTimer.wait_time = maxParryWindow
 	parryCooldownTimer.wait_time = parryCooldownPenaltyTime
+	autoParryTimer.wait_time = autoParryWindow
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("parry_activate") and canParry:
 		activateParry()
 
 func receiveDamage(parryResource : ParryResource):
+	# Check if we're in the auto-parry window first
+	if isInAutoParryWindow:
+		_handleAutoParry(parryResource)
+		return
+	
 	match parryResource.parryType:
 		ParryResource.ParryType.PARRY_ONE_SHOT:
 			dealOneShotParry(parryResource)
 		ParryResource.ParryType.PARRY_WINDOW:
 			dealParryWindow(parryResource)
 
+func _handleAutoParry(parryResource : ParryResource):
+	# Silently treat as successful parry without effects
+	# Use the perfect status from the original parry
+	if parryResource.successfulParryCallback.is_valid():
+		parryResource.successfulParryCallback.call(wasAutoParryPerfect)
+	SignalBus.successfullParry.emit(parryResource, wasAutoParryPerfect)
+
 func activateParry():
 	isParrying = true
 	canParry = false
+	# Manual parry cancels auto-parry window
+	if isInAutoParryWindow:
+		autoParryTimer.stop()
+		isInAutoParryWindow = false
+		wasAutoParryPerfect = false
+	
 	fpAnimationManager.playAnimation("FP_Parry_Stance")
 	parryTimer.start()
 	
@@ -76,6 +100,11 @@ func _onNormalParry(parryResource : ParryResource):
 	isParrying = false
 	canParry = true
 	
+	# Start auto-parry window (normal parry)
+	isInAutoParryWindow = true
+	wasAutoParryPerfect = false
+	autoParryTimer.start()
+	
 	# Call the success callback if it exists (passing false for not perfect)
 	if parryResource.successfulParryCallback.is_valid():
 		parryResource.successfulParryCallback.call(false)
@@ -95,6 +124,11 @@ func _onPerfectParry(parryResource : ParryResource):
 	# Reset parry state and allow immediate re-parry
 	isParrying = false
 	canParry = true
+	
+	# Start auto-parry window (perfect parry)
+	isInAutoParryWindow = true
+	wasAutoParryPerfect = true
+	autoParryTimer.start()
 	
 	# Call the success callback if it exists (passing true for perfect parry)
 	if parryResource.successfulParryCallback.is_valid():
@@ -186,6 +220,11 @@ func _onNormalParryWindows(successfulWindows : Array[Dictionary]):
 	isParrying = false
 	canParry = true
 	
+	# Start auto-parry window (normal parry)
+	isInAutoParryWindow = true
+	wasAutoParryPerfect = false
+	autoParryTimer.start()
+	
 	# Call callbacks for all successful windows
 	for windowData in successfulWindows:
 		var parryResource : ParryResource = windowData.resource
@@ -204,6 +243,11 @@ func _onPerfectParryWindows(successfulWindows : Array[Dictionary]):
 	# Reset parry state and allow immediate re-parry
 	isParrying = false
 	canParry = true
+	
+	# Start auto-parry window (perfect parry)
+	isInAutoParryWindow = true
+	wasAutoParryPerfect = true
+	autoParryTimer.start()
 	
 	# Call callbacks for all successful windows
 	for windowData in successfulWindows:
@@ -258,3 +302,8 @@ func _on_parry_timer_timeout() -> void:
 func _on_parry_cooldown_timer_timeout() -> void:
 	# Cooldown is over, player can parry again
 	canParry = true
+
+func _on_auto_parry_timer_timeout() -> void:
+	# Auto-parry window expired
+	isInAutoParryWindow = false
+	wasAutoParryPerfect = false

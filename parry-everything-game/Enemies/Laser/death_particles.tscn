@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://bwby2dlxgtyno"]
+
+[ext_resource type="Texture2D" uid="uid://buqq2bqa2i6fw" path="res://Assets/Particles/circle_05.png" id="1_psm1f"]
+[ext_resource type="Script" uid="uid://bghbfj57yq0fl" path="res://Misc/particles_self_deletion.gd" id="2_b64e7"]
+
+[sub_resource type="Gradient" id="Gradient_m30vn"]
+colors = PackedColorArray(0, 0, 0, 1, 1, 0.8117647, 0.2509804, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ibxdp"]
+gradient = SubResource("Gradient_m30vn")
+use_hdr = true
+
+[sub_resource type="Gradient" id="Gradient_b64e7"]
+offsets = PackedFloat32Array(0, 0.78104573, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.7617416, 0.7617416, 0.7617416, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_bw2q4"]
+gradient = SubResource("Gradient_b64e7")
+
+[sub_resource type="Curve" id="Curve_mvwa4"]
+_limits = [0.0, 100.0, 0.0, 100.0]
+_data = [Vector2(0, 48.098434), 0.0, 0.0, 0, 0]
+point_count = 1
+
+[sub_resource type="CurveTexture" id="CurveTexture_e877x"]
+curve = SubResource("Curve_mvwa4")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dng4a"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+spread = 180.0
+initial_velocity_min = 5.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.59999996
+scale_max = 0.79999995
+color_ramp = SubResource("GradientTexture1D_bw2q4")
+color_initial_ramp = SubResource("GradientTexture1D_ibxdp")
+emission_curve = SubResource("CurveTexture_e877x")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ce2lu"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_psm1f")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_7titf"]
+material = SubResource("StandardMaterial3D_ce2lu")
+
+[node name="DeathParticles" type="GPUParticles3D" unique_id=924210824]
+emitting = false
+amount = 120
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_dng4a")
+draw_pass_1 = SubResource("QuadMesh_7titf")
+script = ExtResource("2_b64e7")
