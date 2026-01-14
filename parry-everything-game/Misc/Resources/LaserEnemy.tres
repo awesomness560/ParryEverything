@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b6xdr0uvh70xn" path="res://Misc/Resources/parryResource.gd" id="1_c3cuo"]
 
 [resource]
+resource_local_to_scene = true
 script = ExtResource("1_c3cuo")
 damage = 20.0
 perfectParryWindow = 0.2

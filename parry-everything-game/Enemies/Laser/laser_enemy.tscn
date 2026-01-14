@@ -6,6 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://buqq2bqa2i6fw" path="res://Assets/Particles/circle_05.png" id="3_7f2vb"]
 [ext_resource type="AudioStream" uid="uid://d0f8sqpqimti4" path="res://Assets/Sounds/laserCharge.mp3" id="5_32voo"]
 [ext_resource type="PackedScene" uid="uid://b00sj4ciimor0" path="res://Misc/health_bar.tscn" id="6_t73sw"]
+[ext_resource type="Shader" uid="uid://c2gp5scaitug8" path="res://Assets/Shaders/shockwave.gdshader" id="7_eg1cs"]
+[ext_resource type="Shader" uid="uid://ba6vwo4dn2pbk" path="res://Assets/Shaders/health_bar.gdshader" id="7_m30vn"]
+[ext_resource type="Script" uid="uid://iruae0nb5bfq" path="res://Enemies/Laser/shockwave.gd" id="8_m30vn"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_buepd"]
 
@@ -70,7 +73,7 @@ material = SubResource("StandardMaterial3D_t73sw")
 albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_v3hqn"]
-radius = 17.617
+radius = 56.580536
 
 [sub_resource type="Curve" id="Curve_t73sw"]
 _limits = [0.0, 50.0, 0.0, 100.0]
@@ -114,7 +117,30 @@ emission_enabled = true
 emission = Color(1, 0, 0, 1)
 emission_energy_multiplier = 4.16
 
-[node name="LaserEnemy" type="Node3D" unique_id=1303688957 node_paths=PackedStringArray("visualsNode", "spinningCenterNode", "amountGatheringParticles", "laserFinishParticles", "chargeUpAudio", "healthBar", "aimingLaser", "aimingLaserMesh")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ibxdp"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("7_m30vn")
+shader_parameter/use_billboard = true
+shader_parameter/health_color = Color(0, 1, 0, 1)
+shader_parameter/damage_color = Color(1, 0, 0, 1)
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 0.074000003515
+shader_parameter/health = 0.7
+shader_parameter/damage = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_eg1cs"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m30vn"]
+render_priority = 0
+shader = ExtResource("7_eg1cs")
+shader_parameter/strength = -0.05
+shader_parameter/ring_width = 4.0
+shader_parameter/aberration = 0.02
+shader_parameter/fade = 1.0
+
+[node name="LaserEnemy" type="Node3D" unique_id=1303688957 node_paths=PackedStringArray("visualsNode", "spinningCenterNode", "amountGatheringParticles", "laserFinishParticles", "chargeUpAudio", "healthBar", "shockwaveEffect", "aimingLaser", "aimingLaserMesh")]
 script = ExtResource("1_f0s5n")
 parryResource = ExtResource("2_7myrs")
 visualsNode = NodePath("Visuals")
@@ -123,6 +149,9 @@ amountGatheringParticles = NodePath("Visuals/Core/LaserGatheringEffects")
 laserFinishParticles = NodePath("Extender/Particles")
 chargeUpAudio = NodePath("ChargeUpAudio")
 healthBar = NodePath("HealthBar")
+shockwaveEffect = NodePath("Shockwave")
+parryDamage = 50.0
+perfectParryDamage = 100.0
 aimingLaser = NodePath("Extender")
 aimingLaserMesh = NodePath("Extender/Laser")
 attack_charge_duration = 1.95
@@ -194,6 +223,15 @@ pitch_scale = 2.0
 
 [node name="HealthBar" parent="." unique_id=1165032704 instance=ExtResource("6_t73sw")]
 transform = Transform3D(3.3779695, 0, 0, 0, 0.35690585, 0, 0, 0, 1.0166657, 0, 5.7325478, 0)
+surface_material_override/0 = SubResource("ShaderMaterial_ibxdp")
+
+[node name="Shockwave" type="MeshInstance3D" parent="." unique_id=592008922]
+transform = Transform3D(10.17, 0, 0, 0, 10.17, 0, 0, 0, 10.17, 0, 0, 0)
+mesh = SubResource("SphereMesh_eg1cs")
+surface_material_override/0 = SubResource("ShaderMaterial_m30vn")
+script = ExtResource("8_m30vn")
+duration = 1.5
+end_scale = Vector3(8, 8, 8)
 
 [connection signal="body_entered" from="TargetingRange" to="." method="_on_targeting_range_body_entered"]
 [connection signal="body_exited" from="TargetingRange" to="." method="_on_targeting_range_body_exited"]

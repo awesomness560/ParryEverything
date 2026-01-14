@@ -23,6 +23,8 @@ enum State {
 @export var chargeUpAudio : AudioStreamPlayer3D
 ##Health Bar reference
 @export var healthBar : HealthBar
+##Shockwave reference
+@export var shockwaveEffect : ShockwaveEffect
 
 @export_group("Health")
 ##Maximum health for this enemy
@@ -238,6 +240,8 @@ func onSuccesfullyParried(isPerfectParry : bool):
 	# Apply damage based on parry type
 	var damage = perfectParryDamage if isPerfectParry else parryDamage
 	healthBar.health -= damage
+	
+	shockwaveEffect.play_shockwave()
 	
 	# Check if enemy is defeated
 	if healthBar.health <= 0:

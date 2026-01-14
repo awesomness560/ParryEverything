@@ -6,6 +6,7 @@
 [sub_resource type="QuadMesh" id="QuadMesh_eg1cs"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m30vn"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_tc80r")
 shader_parameter/use_billboard = true
