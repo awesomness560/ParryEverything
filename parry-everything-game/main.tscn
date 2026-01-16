@@ -86,7 +86,7 @@ environment = SubResource("Environment_272bh")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=2024745931]
 stream = ExtResource("5_lquwl")
-volume_db = -42.21
+volume_db = -16.888
 autoplay = true
 
 [node name="Player" parent="." unique_id=559422446 instance=ExtResource("3_h2yge")]

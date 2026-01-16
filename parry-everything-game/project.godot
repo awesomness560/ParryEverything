@@ -28,7 +28,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/CameraShake3D/plugin.cfg")
+enabled=PackedStringArray("res://addons/CameraShake3D/plugin.cfg", "res://addons/simplest_god_ray_3d/plugin.cfg")
 
 [file_customization]
 
